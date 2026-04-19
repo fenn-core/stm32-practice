@@ -1,0 +1,19 @@
+# Build outputs
+/build/
+Debug/
+Release/
+
+# CubeIDE / Eclipse
+.metadata/
+.settings/
+*.launch
+
+# Toolchain
+*.o
+*.elf
+*.map
+*.bin
+*.hex
+
+# Logs / temp
+*.log

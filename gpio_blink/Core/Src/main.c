@@ -95,11 +95,19 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  uint32_t last_toggle_time = 0;
+  uint32_t blink_interval = 1000;
   while (1)
   {
     /* USER CODE END WHILE */
-
     /* USER CODE BEGIN 3 */
+	  uint32_t current_time = HAL_GetTick();
+	  uint32_t time_elapsed = HAL_GetTick();
+	  if (current_time - last_toggle_time >= blink_interval){
+		  HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+		  last_toggle_time = time_elapsed;
+	  }
+
   }
   /* USER CODE END 3 */
 }

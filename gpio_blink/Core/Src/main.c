@@ -102,10 +102,9 @@ int main(void)
     /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */
 	  uint32_t current_time = HAL_GetTick();
-	  uint32_t time_elapsed = HAL_GetTick();
 	  if (current_time - last_toggle_time >= blink_interval){
 		  HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-		  last_toggle_time = time_elapsed;
+		  last_toggle_time = current_time;
 	  }
 
   }

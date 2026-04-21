@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include <stdbool.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -75,6 +76,12 @@ int main(void)
 	} LedMode;
 
 	LedMode mode = MODE_OFF;
+
+	uint32_t current_time = 0;
+	uint32_t last_toggle_time = 0;
+	uint32_t raw_button_input = 1;
+	bool button_state = false;
+	bool button_previous_state = false;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -107,6 +114,52 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
+	  current_time = HAL_GetTick();
+
+	  raw_button_input = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13);
+	  if (raw_button_input == 0){
+		  button_state = true;
+	  }
+	  else{
+		  button_state = false;
+	  }
+
+	  if (button_previous_state == false && button_state == true){
+		  mode++;
+		  mode = (mode % 4);
+		  last_toggle_time = 0;
+	  }
+
+	  if (button_previous_state != button_state){
+		  button_previous_state = button_state;
+	  }
+
+	  switch (mode){
+
+	  case MODE_OFF:
+		  HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+	  	  break;
+
+	  case MODE_SLOW:
+		  if (current_time - last_toggle_time >= 1000){
+		  	  HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+		  	  last_toggle_time = current_time;
+		  }
+		  break;
+
+	  case MODE_FAST:
+		  if (current_time - last_toggle_time >= 100){
+			  HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+		  	  last_toggle_time = current_time;
+		  		  }
+		  break;
+
+	  case MODE_ON:
+		  HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+		  break;
+
+	  }
 
   }
   /* USER CODE END 3 */

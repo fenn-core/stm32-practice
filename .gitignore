@@ -17,3 +17,6 @@ Release/
 
 # Logs / temp
 *.log
+
+# Helpers 
+local_docs/

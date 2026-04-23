@@ -7,17 +7,17 @@
 
 #ifndef INC_SSD1306_H_
 #define INC_SSD1306_H_
+#include <stdint.h>
+#include <stdbool.h>
 
-void hardware_reset(void);
+void ssd1306_set_full_buffer(void);
 
-void send_spi_command(uint8_t cmd);
-
-void send_spi_data(uint8_t data);
+void ssd1306_clear_buffer(void);
 
 void ssd1306_init(void);
 
-void ssd1306_set_full_window(void);
+void draw_pixel(uint8_t x, uint8_t y, bool state);
 
-void ssd1306_set_fully_lit(void);
+void ssd1306_update(void);
 
 #endif /* INC_SSD1306_H_ */

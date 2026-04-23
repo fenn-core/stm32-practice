@@ -6,9 +6,16 @@
  */
 
 #include "main.h"
+#include <string.h>
+#include <stdint.h>
+#include <stdbool.h>
 
+#define SSD1306_BUFFER_SIZE 1024
 
 extern SPI_HandleTypeDef hspi1;
+
+uint8_t framebuffer[SSD1306_BUFFER_SIZE];
+
 
 void hardware_reset(void){
 	HAL_GPIO_WritePin(OLED_RST_GPIO_Port, OLED_RST_Pin, GPIO_PIN_RESET);
@@ -29,6 +36,33 @@ void send_spi_data(uint8_t data){
 	HAL_GPIO_WritePin(OLED_DC_GPIO_Port, OLED_DC_Pin, GPIO_PIN_SET);
 	HAL_SPI_Transmit(&hspi1, &data, 1, HAL_MAX_DELAY);
 	HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, GPIO_PIN_SET);
+}
+
+void send_spi_framebuffer(uint8_t *data, uint32_t length){
+	HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(OLED_DC_GPIO_Port, OLED_DC_Pin, GPIO_PIN_SET);
+	HAL_SPI_Transmit(&hspi1, data, length, HAL_MAX_DELAY);
+	HAL_GPIO_WritePin(OLED_CS_GPIO_Port, OLED_CS_Pin, GPIO_PIN_SET);
+}
+
+void ssd1306_set_full_window(void){
+    // Set column address
+    send_spi_command(0x21); // command
+    send_spi_command(0x00); // start column
+    send_spi_command(0x7F); // end column (127)
+
+    // Set page address
+    send_spi_command(0x22); // command
+    send_spi_command(0x00); // start page
+    send_spi_command(0x07); // end page (7)
+}
+
+void ssd1306_set_full_buffer(void){
+	memset(framebuffer, 0xFF, SSD1306_BUFFER_SIZE);
+}
+
+void ssd1306_clear_buffer(void){
+	memset(framebuffer, 0x00, SSD1306_BUFFER_SIZE);
 }
 
 void ssd1306_init(void){
@@ -64,7 +98,7 @@ void ssd1306_init(void){
 	send_spi_command(0x80); // a common default-ish startup value
 
 	send_spi_command(0x8D); // enable the charge pump for the
-	send_spi_command(0x8D); // common internal-charge-pump style modules
+	send_spi_command(0x14); // common internal-charge-pump style modules
 
 	send_spi_command(0xD9); // set pre-charge period to a
 	send_spi_command(0xF1); // common internal-VCC/charge-pump-friendly value
@@ -75,28 +109,31 @@ void ssd1306_init(void){
 	send_spi_command(0x2E); // deactivate scroll
 
 	send_spi_command(0xAF); // display on
+
+	ssd1306_clear_buffer(); // clear buffer to prevent garbage
 }
 
-void ssd1306_set_full_window(void)
-{
-    // Set column address
-    send_spi_command(0x21); // command
-    send_spi_command(0x00); // start column
-    send_spi_command(0x7F); // end column (127)
-
-    // Set page address
-    send_spi_command(0x22); // command
-    send_spi_command(0x00); // start page
-    send_spi_command(0x07); // end page (7)
-}
-
-void ssd1306_set_fully_lit(void){
-	ssd1306_set_full_window();
-	send_spi_command(0x40); // set display start line to zero
-
-	for (uint16_t i = 0; i < 1024; i++){
-		send_spi_data(0xFF);
+void draw_pixel(uint8_t x, uint8_t y, bool state){
+	if (128 > x && 64 > y){
+		uint8_t page = (y / 8);
+		uint16_t buffer_index = (page * 128) + x;
+		uint8_t bit_position = (y % 8);
+		uint8_t mask = 1 << bit_position;
+        if (state){
+            framebuffer[buffer_index] |= mask;
+        } else {
+            framebuffer[buffer_index] &= ~mask;
+		}
 	}
 }
+
+void ssd1306_update(void){
+	ssd1306_set_full_window();
+	send_spi_framebuffer(framebuffer, SSD1306_BUFFER_SIZE);
+}
+
+
+
+
 
 

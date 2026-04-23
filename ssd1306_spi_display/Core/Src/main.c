@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "ssd1306.h"
+#include <stdbool.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -71,7 +72,6 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -96,7 +96,42 @@ int main(void)
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
   ssd1306_init();
-  ssd1306_set_fully_lit();
+  uint8_t x = 44;
+  uint8_t y = 52;
+  uint8_t delay = 25;
+
+  void bouncing_pixel(uint8_t x, uint8_t y, uint8_t delay){
+	  bool x_direction = true;
+	  bool y_direction = true;
+	  while (1){
+		  ssd1306_clear_buffer();
+		  draw_pixel(x, y, true);
+		  ssd1306_update();
+
+		  if ((x == 0 && !x_direction) ||(x == 127 && x_direction)){
+			  x_direction = ! x_direction;
+		  }
+		  if ((y == 0 && !y_direction) || (y == 63 && y_direction)){
+			  y_direction = ! y_direction;
+		  }
+		  if (x_direction){
+			  x++;
+		  }
+		  else{
+			  x--;
+		  }
+		  if (y_direction){
+			  y++;
+		  }
+		  else{
+			  y--;
+		  }
+		  HAL_Delay(delay);
+	  }
+  }
+
+  bouncing_pixel(x, y, delay);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -106,6 +141,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
   }
   /* USER CODE END 3 */
 }

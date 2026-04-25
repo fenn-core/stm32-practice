@@ -111,6 +111,12 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  ssd1306_clear_buffer();
+	  draw_string(30, 28, "Hello World!");
+	  ssd1306_update();
+
+	  HAL_Delay(5000);
+
 	  bouncing_pixel(x, y, delay, animation_time);
 
 	  ssd1306_clear_buffer();
@@ -119,11 +125,10 @@ int main(void)
 	  draw_rect(20, 10, 107, 53);
 	  draw_rect(30, 15, 97, 48);
 	  draw_rect(40, 20, 87, 43);
-	  draw_rect(50, 25, 77, 38);
+	  draw_rect_filled(50, 25, 77, 38);
 	  ssd1306_update();
 
 	  HAL_Delay(5000);
-
   }
   /* USER CODE END 3 */
 }

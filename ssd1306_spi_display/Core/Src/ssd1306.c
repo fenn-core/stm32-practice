@@ -16,6 +16,7 @@ extern SPI_HandleTypeDef hspi1;
 
 uint8_t framebuffer[SSD1306_BUFFER_SIZE];
 
+// SCK->D13 SDA->D11 RES->PC2 DC->PC1 CS->PC0
 
 void hardware_reset(void){
 	HAL_GPIO_WritePin(OLED_RST_GPIO_Port, OLED_RST_Pin, GPIO_PIN_RESET);

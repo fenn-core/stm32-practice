@@ -60,18 +60,6 @@ static void MX_USART2_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-typedef struct{
-	  uint16_t dig_T1;
-	  int16_t dig_T2;
-	  int16_t dig_T3;
-}bme280_calib_t;
-
-typedef struct{
-	  uint32_t adc_P;
-	  uint32_t adc_T;
-	  uint16_t adc_H;
-}adc_t;
-
 /* USER CODE END 0 */
 
 /**
@@ -106,30 +94,7 @@ int main(void)
   MX_I2C1_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  bme280_init();
-  bme280_calib_t calib_vals;
-  adc_t raw_values;
-  uint8_t raw_data[8];
-  int8_t calib_buffer[2];
-
-  read_registers(0xF7, raw_data, 8);
-
-  read_registers(0x88, calib_buffer, 2);
-  calib_vals.dig_T1 = (((uint16_t)calib_buffer[1] << 8) | (uint16_t)calib_buffer[0]);
-
-  read_registers(0x8A, calib_buffer, 2);
-  calib_vals.dig_T2 = (int16_t)(((uint16_t)calib_buffer[1] << 8) | (uint16_t)calib_buffer[0]);
-
-  read_registers(0x8C, calib_buffer, 2);
-  calib_vals.dig_T3 = (int16_t)(((uint16_t)calib_buffer[1] << 8) | (uint16_t)calib_buffer[0]);
-
-
-  raw_values.adc_P = process_raw_data_20bit(&raw_data[0]);
-
-  raw_values.adc_T = process_raw_data_20bit(&raw_data[3]);
-
-  raw_values.adc_H = process_raw_data_16bit(&raw_data[6]);
-
+  bme280_init(&hi2c1, 0x76);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -139,6 +104,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  bme280_read_values();
   }
   /* USER CODE END 3 */
 }

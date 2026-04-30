@@ -5,8 +5,8 @@
  *      Author: pusana
  */
 
-#ifndef SRC_FONT5X7_H_
-#define SRC_FONT5X7_H_
+#ifndef INC_FONT5X7_H_
+#define INC_FONT5X7_H_
 
 #include <stdint.h>
 
@@ -17,4 +17,4 @@
 
 extern const uint8_t font5x7[][FONT5X7_WIDTH];
 
-#endif /* SRC_FONT5X7_H_ */
+#endif /* INC_FONT5X7_H_ */

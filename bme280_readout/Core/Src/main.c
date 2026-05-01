@@ -75,9 +75,13 @@ char hum[25];
 char message[100];
 uint32_t current_time = 0;
 uint32_t last_sent_time = 0;
-uint32_t interval = 2000;
+uint32_t interval = 1000;
 uint8_t temp_whole;
 uint8_t temp_frac;
+
+
+ssd1306_spi_config_t display1_config;
+ssd1306_spi_t display1;
 /* USER CODE END 0 */
 
 /**
@@ -88,7 +92,13 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-
+	display1_config.handle = &hspi2;
+	display1_config.cs_pin = OLED_CS_Pin;
+	display1_config.cs_port = OLED_CS_GPIO_Port;
+	display1_config.dc_pin = OLED_DC_Pin;
+	display1_config.dc_port = OLED_DC_GPIO_Port;
+	display1_config.rst_pin = OLED_RST_Pin;
+	display1_config.rst_port = OLED_RST_GPIO_Port;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -114,7 +124,7 @@ int main(void)
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
   bme280_init(&sensor1, &hi2c1, 0x76);
-  ssd1306_init();
+  ssd1306_init(&display1, &display1_config);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -154,11 +164,11 @@ int main(void)
 							(uint8_t*)message,
 							strlen(message),
 							5000);
-	  	  ssd1306_clear_buffer();
-		  draw_string(35, 15, temp);
-		  draw_string(35, 30, pres);
-		  draw_string(35, 45, hum);
-		  ssd1306_update();
+	  	  ssd1306_clear_buffer(&display1);
+		  draw_string(&display1, 35, 15, temp);
+		  draw_string(&display1, 35, 30, pres);
+		  draw_string(&display1, 35, 45, hum);
+		  ssd1306_update(&display1);
 	  	  last_sent_time = current_time;
 	  }
   }

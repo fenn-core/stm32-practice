@@ -73,6 +73,8 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+	// PINOUT
+	// SCK->D13 SDA->D11 RES->PC2 DC->PC1 CS->PC0
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -81,7 +83,16 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
+  ssd1306_spi_config_t display1_config;
+  ssd1306_spi_t display1;
 
+  display1_config.handle = &hspi1;
+  display1_config.cs_pin = OLED_CS_Pin;
+  display1_config.cs_port = OLED_CS_GPIO_Port;
+  display1_config.dc_pin = OLED_DC_Pin;
+  display1_config.dc_port = OLED_DC_GPIO_Port;
+  display1_config.rst_pin = OLED_RST_Pin;
+  display1_config.rst_port = OLED_RST_GPIO_Port;
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -96,7 +107,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-  ssd1306_init();
+  ssd1306_init(&display1, &display1_config);
   uint8_t x = 44;
   uint8_t y = 52;
   uint8_t delay = 25;
@@ -111,22 +122,22 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  ssd1306_clear_buffer();
-	  draw_string(30, 28, "Hello World!");
-	  ssd1306_update();
+	  ssd1306_clear_buffer(&display1);
+	  draw_string(&display1, 30, 28, "Hello World!");
+	  ssd1306_update(&display1);
 
 	  HAL_Delay(5000);
 
-	  bouncing_pixel(x, y, delay, animation_time);
+	  bouncing_pixel(&display1, x, y, delay, animation_time);
 
-	  ssd1306_clear_buffer();
-	  draw_rect(0, 0, 127, 63);
-	  draw_rect(10, 5, 117, 58);
-	  draw_rect(20, 10, 107, 53);
-	  draw_rect(30, 15, 97, 48);
-	  draw_rect(40, 20, 87, 43);
-	  draw_rect_filled(50, 25, 77, 38);
-	  ssd1306_update();
+	  ssd1306_clear_buffer(&display1);
+	  draw_rect(&display1, 0, 0, 127, 63);
+	  draw_rect(&display1, 10, 5, 117, 58);
+	  draw_rect(&display1, 20, 10, 107, 53);
+	  draw_rect(&display1, 30, 15, 97, 48);
+	  draw_rect(&display1, 40, 20, 87, 43);
+	  draw_rect_filled(&display1, 50, 25, 77, 38);
+	  ssd1306_update(&display1);
 
 	  HAL_Delay(5000);
   }

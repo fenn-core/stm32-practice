@@ -14,6 +14,33 @@ BME280 sensor and displaying the results over SSD1306 OLED and UART.
 - BME280 module
 - SSD1306 128x64 SPI OLED
 
+## Pinout
+
+### BME280 (I2C) 
+
+| Pin | Board | Description            |
+|-----|-------|------------------------|
+| GND |  GND  | Ground                 |
+| VCC |  3V3  | 3.3 V                  |
+| SCL |  D10  |  Clock          |
+| SDA |  PB7  |  Data           |
+
+---
+
+### SSD1306 (SPI)
+
+| Pin | Board | Description |
+|-----|-------|-------------|
+| GND |  GND  |   Ground    |
+| VCC |  3V3  |   3.3 V     |
+| SCK |  D6   |  SPI Clock  |
+| SDA |  PC1  |  SPI Data   |
+| RES |  PC0  |    Reset    |
+| DC  |  PC3  | Data/Cmd Select|
+| CS  |  PA0  | Chip Select     |
+
+
+
 ## Notes
 - BME280 I2C address: 0x76
 - BME280 chip ID: 0x60

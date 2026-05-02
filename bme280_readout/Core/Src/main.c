@@ -123,8 +123,23 @@ int main(void)
   MX_USART2_UART_Init();
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
-  bme280_init(&sensor1, &hi2c1, 0x76);
+  HAL_StatusTypeDef bme280_state = bme280_init(&sensor1, &hi2c1, 0x76);
   ssd1306_init(&display1, &display1_config);
+
+  if (bme280_state == HAL_OK){
+	  draw_string(&display1, 31, 21, "Sensor Init");
+	  draw_string(&display1, 43, 34, "Success");
+	  ssd1306_update(&display1);
+  }
+  else{
+	  volatile uint8_t sensor_fail = 1;
+	  draw_string(&display1, 10, 19, "Sensor Init Failed");
+	  draw_string(&display1, 22, 37, "Restart System");
+	  ssd1306_update(&display1);
+	  while (sensor_fail){
+		  // show error message indefinitely
+	  }
+  }
   /* USER CODE END 2 */
 
   /* Infinite loop */

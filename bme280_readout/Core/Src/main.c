@@ -27,7 +27,6 @@
 #include <stdio.h>
 #include <string.h>
 
-
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

@@ -5,7 +5,6 @@
  *      Author: pusana
  */
 
-#include "main.h"
 #include "stm32f4xx_hal.h"
 #include "ssd1306.h"
 #include <string.h>

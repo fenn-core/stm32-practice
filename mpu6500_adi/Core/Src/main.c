@@ -21,7 +21,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "mpu6050.h"
+#include "mpu6500.h"
+#include "i2c_recovery.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -73,8 +74,8 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-  mpu6050_t imu1;
-  volatile HAL_StatusTypeDef imu_status;
+
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -99,8 +100,27 @@ int main(void)
   MX_SPI2_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
-  imu_status = mpu6050_init(&imu1, &hi2c1, 0x68);
+  mpu6500_t imu1;
+
+  volatile HAL_StatusTypeDef init_status = mpu6500_init(&imu1, &hi2c1, 0x68);
+  if (init_status != HAL_OK){
+	  i2c_bus_recover(
+	       &hi2c1,
+	       I2C1_SCL_GPIO_Port,
+		   I2C1_SCL_Pin,
+	       I2C1_SDA_GPIO_Port,
+		   I2C1_SDA_Pin
+	  );
+  }
+
+
+  volatile HAL_StatusTypeDef calib_status = mpu6050_calibrate_gyro(&imu1,
+		  MPU6500_DEFAULT_CALIBRATION_SAMPLES,
+		  MPU6500_DEFAULT_CALIBRATION_DELAY);
+
+
   /* USER CODE END 2 */
+
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
@@ -108,7 +128,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-//	  mpu6050_compute_values(&imu1, &hi2c1, 0x68);
+	  volatile HAL_StatusTypeDef read_status = mpu6500_read_data(&imu1);
   }
   /* USER CODE END 3 */
 }

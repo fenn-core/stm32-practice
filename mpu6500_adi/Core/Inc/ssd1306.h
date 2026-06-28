@@ -42,7 +42,7 @@ void ssd1306_clear_buffer(ssd1306_spi_t *display);
 
 void ssd1306_init(ssd1306_spi_t *display);
 
-void draw_pixel(ssd1306_spi_t *display, uint8_t x, uint8_t y, bool state);
+void draw_pixel(ssd1306_spi_t *display, int16_t x, int16_t y, bool state);
 
 void ssd1306_update(ssd1306_spi_t *display);
 

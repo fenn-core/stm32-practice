@@ -8,6 +8,8 @@
 #ifndef INC_ATTITUDE_H_
 #define INC_ATTITUDE_H_
 
+#include <stdbool.h>
+
 
 typedef struct{
 	float x;
@@ -49,12 +51,17 @@ typedef struct{
 	float roll_deg;
 	float pitch_deg;
 
+	bool initialized;
+
 	attitude_orientatiton_t orientation;
 
 }attitude_t;
 
 
-void attitude_compute_pitch_roll(attitude_t *attitude, const vec3f_t accel_vals);
+void attitude_compute_pitch_roll(attitude_t *attitude,
+		const vec3f_t accel_vals,
+		const vec3f_t gyro_vals,
+		float dt);
 
 
 #endif /* INC_ATTITUDE_H_ */

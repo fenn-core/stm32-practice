@@ -21,11 +21,13 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdint.h>
 #include "mpu6500.h"
 #include "ssd1306.h"
 #include "graphics.h"
 #include "i2c_recovery.h"
 #include "attitude.h"
+#include "adi.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -106,7 +108,9 @@ int main(void)
   mpu6500_t imu1;
   ssd1306_spi_t display1;
   attitude_t attitude1;
-  vec3f_t values;
+  adi_t adi1;
+  vec3f_t accel1;
+  vec3f_t gyro1;
 
   display1.config.handle = &hspi2;
 
@@ -127,6 +131,10 @@ int main(void)
   attitude1.orientation.body_y = IMU_AXIS_Y;
   attitude1.orientation.body_z = IMU_AXIS_Z;
 
+  adi1.pitch_alpha = 0.20f;
+  adi1.roll_alpha = 0.15f;
+  adi1.initialized = false;
+
 
   volatile HAL_StatusTypeDef init_status = mpu6500_init(&imu1, &hi2c1, 0x68);
   if (init_status != HAL_OK){
@@ -145,8 +153,8 @@ int main(void)
 		  MPU6500_DEFAULT_CALIBRATION_DELAY);
 
   ssd1306_init(&display1);
-  draw_line(&display1, 25, 25, 110, 55);
-  ssd1306_update(&display1);
+
+  uint32_t initial_time = HAL_GetTick();
 
   /* USER CODE END 2 */
 
@@ -159,11 +167,22 @@ int main(void)
     /* USER CODE BEGIN 3 */
 	  volatile HAL_StatusTypeDef read_status = mpu6500_read_data(&imu1);
 
-	  values.x = imu1.data.accel_x_g;
-	  values.y = imu1.data.accel_y_g;
-	  values.z = imu1.data.accel_z_g;
+	  accel1.x = imu1.data.accel_x_g;
+	  accel1.y = imu1.data.accel_y_g;
+	  accel1.z = imu1.data.accel_z_g;
 
-	  attitude_compute_pitch_roll(&attitude1, values);
+	  gyro1.x = imu1.data.gyro_x_dps;
+	  gyro1.y = imu1.data.gyro_y_dps;
+	  gyro1.z = imu1.data.gyro_z_dps;
+
+	  uint32_t current_time = HAL_GetTick();
+	  float dt = ((float)(current_time - initial_time)) / 1000.0f;
+	  initial_time = current_time;
+
+	  attitude_compute_pitch_roll(&attitude1, accel1, gyro1, dt);
+
+	  adi_draw_128x64(&adi1, &display1, &attitude1, ADI_DEFAULT_PIXELS_PER_DEG);
+
 
   }
   /* USER CODE END 3 */

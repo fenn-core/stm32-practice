@@ -110,8 +110,9 @@ void ssd1306_init(ssd1306_spi_t *display){
 	send_spi_command(display, 0xAF); // display on
 }
 
-void draw_pixel(ssd1306_spi_t *display, uint8_t x, uint8_t y, bool state){
-	if (128 > x && 64 > y){
+void draw_pixel(ssd1306_spi_t *display, int16_t x, int16_t y, bool state){
+	if (x >= 0 && x < 128 &&
+	    y >= 0 && y < 64) {
 		uint8_t page = (y / 8);
 		uint16_t buffer_index = (page * 128) + x;
 		uint8_t bit_position = (y % 8);

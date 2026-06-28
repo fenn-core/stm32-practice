@@ -11,7 +11,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-void bouncing_pixel(ssd1306_spi_t *display, uint8_t x, uint8_t y, uint8_t delay, uint32_t animation_time);
+void bouncing_pixel_128x64(ssd1306_spi_t *display, uint8_t x, uint8_t y, uint8_t delay, uint32_t animation_time);
 
 void draw_hline(ssd1306_spi_t *display,uint8_t x, uint8_t y, uint8_t length);
 

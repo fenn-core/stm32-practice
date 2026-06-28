@@ -22,7 +22,10 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "mpu6500.h"
+#include "ssd1306.h"
+#include "graphics.h"
 #include "i2c_recovery.h"
+#include "attitude.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -101,6 +104,29 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   mpu6500_t imu1;
+  ssd1306_spi_t display1;
+  attitude_t attitude1;
+  vec3f_t values;
+
+  display1.config.handle = &hspi2;
+
+  display1.config.rst_pin = SSD1306_RES_Pin;
+  display1.config.rst_port = SSD1306_RES_GPIO_Port;
+
+  display1.config.dc_pin = SSD1306_DC_Pin;
+  display1.config.dc_port = SSD1306_DC_GPIO_Port;
+
+  display1.config.cs_pin = SSD1306_CS_Pin;
+  display1.config.cs_port = SSD1306_CS_GPIO_Port;
+
+  attitude1.orientation.sign_x = IMU_POSITIVE_SIGN;
+  attitude1.orientation.sign_y = IMU_POSITIVE_SIGN;
+  attitude1.orientation.sign_z = IMU_POSITIVE_SIGN;
+
+  attitude1.orientation.body_x = IMU_AXIS_X;
+  attitude1.orientation.body_y = IMU_AXIS_Y;
+  attitude1.orientation.body_z = IMU_AXIS_Z;
+
 
   volatile HAL_StatusTypeDef init_status = mpu6500_init(&imu1, &hi2c1, 0x68);
   if (init_status != HAL_OK){
@@ -118,6 +144,9 @@ int main(void)
 		  MPU6500_DEFAULT_CALIBRATION_SAMPLES,
 		  MPU6500_DEFAULT_CALIBRATION_DELAY);
 
+  ssd1306_init(&display1);
+  draw_line(&display1, 25, 25, 110, 55);
+  ssd1306_update(&display1);
 
   /* USER CODE END 2 */
 
@@ -129,6 +158,13 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 	  volatile HAL_StatusTypeDef read_status = mpu6500_read_data(&imu1);
+
+	  values.x = imu1.data.accel_x_g;
+	  values.y = imu1.data.accel_y_g;
+	  values.z = imu1.data.accel_z_g;
+
+	  attitude_compute_pitch_roll(&attitude1, values);
+
   }
   /* USER CODE END 3 */
 }
@@ -304,7 +340,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, LD2_Pin|SSD1306_RES_Pin|SSD1306_CS_Pin|SSD1306_DC_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
@@ -312,12 +348,12 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : LD2_Pin */
-  GPIO_InitStruct.Pin = LD2_Pin;
+  /*Configure GPIO pins : LD2_Pin SSD1306_RES_Pin SSD1306_CS_Pin SSD1306_DC_Pin */
+  GPIO_InitStruct.Pin = LD2_Pin|SSD1306_RES_Pin|SSD1306_CS_Pin|SSD1306_DC_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 

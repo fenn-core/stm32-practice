@@ -1,5 +1,5 @@
 # Build Related 
-/build/
+build/
 Debug/
 debug/
 Release/

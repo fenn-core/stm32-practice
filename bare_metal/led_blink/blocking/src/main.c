@@ -12,14 +12,14 @@ int main(void) {
     RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN;
     (void) RCC->AHB2ENR; // dummy readback
 
-    GPIOA->MODER &= ~((uint32_t) (3U) << 10); // 3U as in 0b11
-    GPIOA->MODER |= ((uint32_t) (1U) << 10); // set output mode for PA5
+    GPIOA->MODER &= ~GPIO_MODER_MODE5_Msk; // 3U as in 0b11
+    GPIOA->MODER |= GPIO_MODER_MODE5_0; // set output mode for PA5
 
-    GPIOA->OTYPER &= ~((uint32_t) (1U) << 5);
+    GPIOA->OTYPER &= ~GPIO_OTYPER_OT5;
 
-    GPIOA->OSPEEDR &= ~((uint32_t) (3U) << 10);
+    GPIOA->OSPEEDR &= ~GPIO_OSPEEDR_OSPEED5_Msk;
 
-    GPIOA->PUPDR &= ~((uint32_t) (3U) << 10);
+    GPIOA->PUPDR &= ~GPIO_PUPDR_PUPD5_Msk;
 
     while (1) {
         GPIOA->BSRR = GPIO_BSRR_BS5;

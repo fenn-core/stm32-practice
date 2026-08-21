@@ -1,12 +1,15 @@
-# Build outputs
+# Build Related 
 /build/
 Debug/
 Release/
+cmake-build-debug
 
-# CubeIDE / Eclipse
+
+# CubeIDE / Clion
 .metadata/
 .settings/
 *.launch
+.idea 
 
 # Toolchain
 *.o

@@ -1,8 +1,11 @@
 # Build Related 
 /build/
 Debug/
+debug/
 Release/
 cmake-build-debug
+cmake-build-embedded 
+cmake-build-*
 
 
 # CubeIDE / Clion

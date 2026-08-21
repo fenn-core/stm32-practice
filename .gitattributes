@@ -1,0 +1,8 @@
+# STM32 vendor code
+hal/**/Drivers/** linguist-vendored=true
+bare_metal/**/vendor/** linguist-vendored=true
+
+# Build output
+**/build/** linguist-generated=true
+**/Debug/** linguist-generated=true
+**/cmake-build-embedded/** linguist-generated=true
